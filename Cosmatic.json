@@ -1,0 +1,535 @@
+{
+  "name": "Cosmatic",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        736,
+        32
+      ],
+      "id": "2a9f157b-9d44-46c4-9799-e90d4c236eff",
+      "name": "When chat message received",
+      "webhookId": "e6c87845-aeb7-41ba-8103-b8eb59cdd7ff"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a customer support agent for Shemo cosmetic company. Follow the rules:\nNote : don't let user know that you're an AI, talk like human.\n\n- When user asks for list of products. give the list to them in bullets.\n\n- Use \"Inventory\" tool in case user ask for product list fetch all the products from this tool. Only products and price should be provided to customer.\n- Use \"Customer_orders\" tool to store all the data of the customer. like : Name, Product, Address, Phone no. and payment method. If user don't provide this then ask for this.\n- Use \"update-stocks\" tool to update the stocks after customer place the order successfully.\n- Use this tool to answer ANY questions about Shemo's policies including cancellation, return, refund, shipping policies. \nInput should be the user's exact question.\nNever say you don't have access to policy information.\n- For every customer complaints, please politely apologize to the customer and offer them 5% discount for their next order which will be credited to their account in the form of coupon code. (keep the message short).\n- For every customer's appreciation, Thank them and provide them 10% discount on their next order which will be credited to their account in the form of coupon code. (keep the message short).\n- Use \"feedback\" to add customer's feedback (in the same form sent by customer) in the feedback sheet. You also need to add fields like Name (you have to ask the customer name politely, if he/she has not given the name, category (positive/negative) in the sheet. Also the exact response that you have sent to the customer as a part of resolution in the resolution field. Do not ask any other data to customer. Do not repeat the same thing again.\n- Once order is confirmed ask customer to make the payment on shemocosmetic@upi to place the order.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        992,
+        64
+      ],
+      "id": "343a8d0a-42b2-4718-92c0-0ab8289f2199",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-nano"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        528,
+        208
+      ],
+      "id": "8b62ef2c-c348-4460-8e97-fb58dda56bf7",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "VzhRQklf2iidzn8p",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        320
+      ],
+      "id": "cc873254-7aae-4c16-9556-e51ae27f54f6",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1oBUGITL6HmJLnFqH2FOACCA5J0PPON8Gico6raSzBo4",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oBUGITL6HmJLnFqH2FOACCA5J0PPON8Gico6raSzBo4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oBUGITL6HmJLnFqH2FOACCA5J0PPON8Gico6raSzBo4/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1664,
+        192
+      ],
+      "id": "f2a1ccb7-2145-457e-bc7e-0d138685fd51",
+      "name": "Inventory",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5fylFRHlmkUnv1W9",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1oBUGITL6HmJLnFqH2FOACCA5J0PPON8Gico6raSzBo4",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oBUGITL6HmJLnFqH2FOACCA5J0PPON8Gico6raSzBo4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1168780110,
+          "mode": "list",
+          "cachedResultName": "Orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oBUGITL6HmJLnFqH2FOACCA5J0PPON8Gico6raSzBo4/edit#gid=1168780110"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+            "Product": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Product', ``, 'string') }}",
+            "Address": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Address', ``, 'string') }}",
+            "Phone number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Phone_number', ``, 'string') }}",
+            "Payment_method": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Payment_method', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product",
+              "displayName": "Product",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Address",
+              "displayName": "Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone number",
+              "displayName": "Phone number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Payment_method",
+              "displayName": "Payment_method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1600,
+        304
+      ],
+      "id": "5b8948f0-9e08-4c2d-b16e-5a8c4c4b1b11",
+      "name": "Customer_orders",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5fylFRHlmkUnv1W9",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1oBUGITL6HmJLnFqH2FOACCA5J0PPON8Gico6raSzBo4",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oBUGITL6HmJLnFqH2FOACCA5J0PPON8Gico6raSzBo4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Product_list",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oBUGITL6HmJLnFqH2FOACCA5J0PPON8Gico6raSzBo4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name__using_to_match_', ``, 'string') }}",
+            "Stock": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Stock', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Product ID",
+              "displayName": "Product ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Stock",
+              "displayName": "Stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Available or not",
+              "displayName": "Available or not",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        960,
+        432
+      ],
+      "id": "22b4fd74-d000-4ce5-ab95-3bdf92e99e43",
+      "name": "update-stocks",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5fylFRHlmkUnv1W9",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1oBUGITL6HmJLnFqH2FOACCA5J0PPON8Gico6raSzBo4",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oBUGITL6HmJLnFqH2FOACCA5J0PPON8Gico6raSzBo4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1231216059,
+          "mode": "list",
+          "cachedResultName": "Feedback",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oBUGITL6HmJLnFqH2FOACCA5J0PPON8Gico6raSzBo4/edit#gid=1231216059"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+            "Category": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Category', ``, 'string') }}",
+            "Feedback": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Feedback', ``, 'string') }}",
+            "Resolution": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Resolution', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Resolution",
+              "displayName": "Resolution",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1216,
+        432
+      ],
+      "id": "d71856dc-9db2-4961-9fa6-dd7d289c4edb",
+      "name": "feedback",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5fylFRHlmkUnv1W9",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://prod-1-data.ke.pinecone.io/assistant/chat/shemo",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Api-Key",
+              "value": "pcsk_6rrA5S_D5SaY8WxB7d7MaXCSRseMy2w37UtZUJtLRhSkpS3Z6V4aRMoETCYyVAUVmHUZVM"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n    \"messages\": [\n      {\n        \"role\": \"user\",\n        \"content\": \"={{ $json.query }}\"\n      }\n    ],\n    \"stream\": false\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        1392,
+        352
+      ],
+      "id": "53acd87f-f6b2-4857-a8fa-3666f5e4f3cf",
+      "name": "policies_rag"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inventory": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Customer_orders": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update-stocks": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "feedback": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "policies_rag": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c7504aa3-9cfb-436d-ad7b-d566b4dbd052",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "01a524c0d803c11188b2a4e404ffcbea08e48587478c888b984a9dcdb15479b7"
+  },
+  "id": "vo9GaG44ro7aVuu5",
+  "tags": []
+}
