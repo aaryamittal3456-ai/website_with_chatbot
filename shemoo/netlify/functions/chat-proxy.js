@@ -5,7 +5,7 @@ exports.handler = async function (event) {
 
   try {
     const response = await fetch(
-      "https://aarya-n8n.app.n8n.cloud/webhook/e6c87845-aeb7-41ba-8103-b8eb59cdd7ff/chat",
+      "https://aaryami.app.n8n.cloud/webhook/e6c87845-aeb7-41ba-8103-b8eb59cdd7ff/chat",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
